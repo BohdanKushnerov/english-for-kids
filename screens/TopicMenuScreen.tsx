@@ -5,15 +5,29 @@ import PrimaryButton from "@/components/ui/PrimaryButton";
 
 type Props = NativeStackScreenProps<RootStackParamList, "TopicMenu">;
 
-export default function TopicMenuScreen({ route }: Props) {
+export default function TopicMenuScreen({ route, navigation }: Props) {
   const { topic } = route.params;
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{topic}</Text>
 
-      <PrimaryButton title="📖 Learn words" onPress={() => {}} />
-      <PrimaryButton title="🎧 Find picture by word" onPress={() => {}} />
+      <PrimaryButton
+        title="📖 Learn words"
+        onPress={() =>
+          navigation.navigate("Learning", {
+            topicKey: topic.toLowerCase(),
+            title: topic,
+          })
+        }
+      />
+
+      <PrimaryButton
+        title="🎧 Find picture by word"
+        onPress={() => {
+          // потом сюда добавим второй режим
+        }}
+      />
     </View>
   );
 }

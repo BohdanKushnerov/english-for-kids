@@ -6,11 +6,13 @@ import { Pressable, Text } from "react-native";
 import HomeScreen from "../screens/HomeScreen";
 import TopicMenuScreen from "../screens/TopicMenuScreen";
 import TopicsScreen from "../screens/TopicsScreen";
+import LearningScreen from "@/screens/LearningScreen";
 
 export type RootStackParamList = {
   Home: undefined;
   Topics: undefined;
   TopicMenu: { topic: string };
+  Learning: { topicKey: string; title: string };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -55,6 +57,7 @@ export default function RootNavigator({
       <Stack.Screen name="Home" component={HomeScreen} />
       <Stack.Screen name="Topics" component={TopicsScreen} />
       <Stack.Screen name="TopicMenu" component={TopicMenuScreen} />
+      <Stack.Screen name="Learning" component={LearningScreen} />
     </Stack.Navigator>
   );
 }
