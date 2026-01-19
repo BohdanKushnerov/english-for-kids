@@ -25,7 +25,10 @@ export default function TopicMenuScreen({ route, navigation }: Props) {
       <PrimaryButton
         title="🎧 Find picture by word"
         onPress={() => {
-          // потом сюда добавим второй режим
+          navigation.navigate("Quiz", {
+            topicKey: topic.toLowerCase(),
+            title: topic,
+          });
         }}
       />
     </View>
