@@ -1,4 +1,5 @@
 import { animals } from "./animals";
+import { numbers } from "./numbers";
 
 export type LearnItem = {
   label: string;
@@ -16,14 +17,7 @@ export const topicsData: Record<string, LearnItem[]> = {
     { label: "White", color: "#FFFFFF" },
   ],
 
-  numbers: [
-    { label: "One" },
-    { label: "Two" },
-    { label: "Three" },
-    { label: "Four" },
-    { label: "Five" },
-    { label: "Six" },
-  ],
+  numbers,
 
   animals,
 };
