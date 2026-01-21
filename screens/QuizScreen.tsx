@@ -1,4 +1,4 @@
-import { topicsData } from "@/data/topics";
+import { LearnItem, topicsData } from "@/data/topics";
 import { Ionicons } from "@expo/vector-icons";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { router } from "expo-router";
@@ -13,7 +13,7 @@ export default function QuizScreen({ route }: Props) {
   const { topicKey, title } = route.params;
 
   const [questionIndex, setQuestionIndex] = useState(0);
-  const [options, setOptions] = useState<any[]>([]);
+  const [options, setOptions] = useState<LearnItem[]>([]);
   const [correct, setCorrect] = useState(0);
   const [wrong, setWrong] = useState(0);
   const [disabledIndexes, setDisabledIndexes] = useState<number[]>([]);
@@ -110,11 +110,20 @@ export default function QuizScreen({ route }: Props) {
               disabled={isDisabled}
               style={[styles.card, isDisabled && styles.wrongCard]}
             >
-              <Image
-                source={option.image}
-                style={styles.image}
-                resizeMode="contain"
-              />
+              {option.image ? (
+                <Image
+                  source={option.image}
+                  style={styles.image}
+                  resizeMode="contain"
+                />
+              ) : (
+                <View
+                  style={[
+                    styles.colorPreview,
+                    { backgroundColor: option.color },
+                  ]}
+                />
+              )}
             </Pressable>
           );
         })}
@@ -195,16 +204,16 @@ const styles = StyleSheet.create({
   grid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    justifyContent: "space-between",
+    justifyContent: "center",
+    gap: 12,
     width: "100%",
   },
 
   card: {
     width: "48%",
-    height: 160,
+    aspectRatio: 1,
     backgroundColor: "#f0f0f0",
-    borderRadius: 16,
-    marginBottom: 10,
+    borderRadius: 18,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -216,6 +225,14 @@ const styles = StyleSheet.create({
   image: {
     width: 120,
     height: 120,
+  },
+
+  colorPreview: {
+    width: "85%",
+    aspectRatio: 1,
+    borderRadius: 18,
+    borderWidth: 2,
+    borderColor: "#d0d0d0",
   },
 
   counter: {

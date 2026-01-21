@@ -1,5 +1,4 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { Pressable, Text } from "react-native";
@@ -28,30 +27,50 @@ export default function RootNavigator({
   theme,
   toggleTheme,
 }: RootNavigatorProps) {
+  const isDark = theme === "dark";
+
   return (
     <Stack.Navigator
       screenOptions={{
         headerShown: true,
-        headerStyle: { backgroundColor: theme === "dark" ? "#111" : "#fff" },
-        headerTintColor: theme === "dark" ? "#fff" : "#000",
+        headerStyle: {
+          backgroundColor: isDark ? "#111" : "#fff",
+        },
+        headerTintColor: isDark ? "#fff" : "#000",
+        headerTitleAlign: "center",
+        headerTitleStyle: {
+          fontWeight: "700",
+          fontSize: 20,
+        },
         headerLeft: ({ canGoBack }) =>
           canGoBack ? (
             <Pressable
               onPress={() => router.back()}
-              style={{ paddingHorizontal: 12 }}
+              style={{
+                paddingHorizontal: 12,
+                flexDirection: "row",
+                alignItems: "center",
+              }}
             >
               <Ionicons
                 name="arrow-back"
-                size={26}
-                color={theme === "dark" ? "#fff" : "#000"}
+                size={24}
+                color={isDark ? "#fff" : "#000"}
               />
+              <Text
+                style={{
+                  marginLeft: 4,
+                  color: isDark ? "#fff" : "#000",
+                  fontSize: 16,
+                }}
+              >
+                Back
+              </Text>
             </Pressable>
           ) : null,
         headerRight: () => (
           <Pressable onPress={toggleTheme} style={{ paddingHorizontal: 12 }}>
-            <Text style={{ fontSize: 16 }}>
-              {theme === "dark" ? "🌞" : "🌙"}
-            </Text>
+            <Text style={{ fontSize: 18 }}>{isDark ? "🌞" : "🌙"}</Text>
           </Pressable>
         ),
       }}

@@ -1,17 +1,15 @@
 import { topicsData } from "@/data/topics";
 import { Ionicons } from "@expo/vector-icons";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { router } from "expo-router";
+import * as Speech from "expo-speech";
 import { useEffect, useState } from "react";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { RootStackParamList } from "../navigation/RootNavigator";
-import * as Speech from "expo-speech";
-import { router } from "expo-router";
-
 
 type Props = NativeStackScreenProps<RootStackParamList, "Learning">;
 
 export default function LearningScreen({ route }: Props) {
-  
   const { topicKey, title } = route.params;
 
   const items = topicsData[topicKey] || [];
@@ -32,15 +30,12 @@ export default function LearningScreen({ route }: Props) {
   };
 
   const next = () => {
-    // setIndex((prev) => (prev + 1 < items.length ? prev + 1 : 0));
     if (index + 1 < items.length) {
       setIndex(index + 1);
     } else {
-      // попытка перелистнуть после последнего элемента
       router.back();
     }
   };
-  
 
   const prev = () => {
     setIndex((prev) => (prev - 1 >= 0 ? prev - 1 : items.length - 1));
@@ -112,6 +107,8 @@ const styles = StyleSheet.create({
     height: 200,
     borderRadius: 20,
     marginBottom: 20,
+    borderWidth: 2,
+    borderColor: "#DDD",
   },
   image: {
     width: 200,
