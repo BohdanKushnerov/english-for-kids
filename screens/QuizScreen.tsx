@@ -93,7 +93,9 @@ export default function QuizScreen({ route }: Props) {
 
       <Text style={styles.question}>Choose the correct picture</Text>
 
-      <Text style={styles.currentWord}>{current.label}</Text>
+      {title !== "Alphabet" && (
+        <Text style={styles.currentWord}>{current.label}</Text>
+      )}
 
       <Pressable onPress={() => speak(current.label)}>
         <Ionicons name="volume-high" size={30} />
@@ -205,6 +207,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "center",
+    alignItems: "center",
     gap: 12,
     width: "100%",
   },

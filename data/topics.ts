@@ -1,3 +1,4 @@
+import { alphabet } from "./alphabet";
 import { animals } from "./animals";
 import { colors } from "./colors";
 import { numbers } from "./numbers";
@@ -14,4 +15,6 @@ export const topicsData: Record<string, LearnItem[]> = {
   numbers,
 
   animals,
+
+  alphabet,
 };

@@ -1,13 +1,22 @@
-import { View, Text, StyleSheet } from "react-native";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { RootStackParamList } from "../navigation/RootNavigator";
 import PrimaryButton from "@/components/ui/PrimaryButton";
 import { useTheme } from "@react-navigation/native";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import * as Speech from "expo-speech";
+import { useEffect } from "react";
+import { StyleSheet, Text, View } from "react-native";
+import { RootStackParamList } from "../navigation/RootNavigator";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Home">;
 
 export default function HomeScreen({ navigation }: Props) {
   const { colors } = useTheme();
+
+  useEffect(() => {
+    Speech.speak(" ", {
+      volume: 0,
+      language: "en-US",
+    });
+  }, []);
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>

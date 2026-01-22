@@ -1,12 +1,12 @@
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import LearningScreen from "@/screens/LearningScreen";
+import QuizScreen from "@/screens/QuizScreen";
 import { Ionicons } from "@expo/vector-icons";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { router } from "expo-router";
 import { Pressable, Text } from "react-native";
 import HomeScreen from "../screens/HomeScreen";
 import TopicMenuScreen from "../screens/TopicMenuScreen";
 import TopicsScreen from "../screens/TopicsScreen";
-import LearningScreen from "@/screens/LearningScreen";
-import QuizScreen from "@/screens/QuizScreen";
 
 export type RootStackParamList = {
   Home: undefined;

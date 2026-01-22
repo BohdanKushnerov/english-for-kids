@@ -21,6 +21,11 @@ const TOPICS = [
     title: "Animals",
     preview: "🐶🐱",
   },
+  {
+    key: "Alphabet",
+    title: "Alphabet",
+    preview: "A B C",
+  },
 ];
 
 export default function TopicsScreen({ navigation }: Props) {
