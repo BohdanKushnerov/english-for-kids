@@ -1,5 +1,3 @@
-// numbers-1-to-12
-
 export const numbers = [
   { label: "One", image: require("@/assets/numbers-1-to-12/One.png") },
   { label: "Two", image: require("@/assets/numbers-1-to-12/Two.png") },

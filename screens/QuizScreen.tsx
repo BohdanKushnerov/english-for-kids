@@ -1,10 +1,10 @@
+import ResultQuizModal from "@/components/ResultQuizModal/ResultQuizModal";
 import { LearnItem, topicsData } from "@/data/topics";
 import { Ionicons } from "@expo/vector-icons";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { router } from "expo-router";
 import * as Speech from "expo-speech";
 import { useEffect, useMemo, useState } from "react";
-import { Image, Modal, Pressable, StyleSheet, Text, View } from "react-native";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { RootStackParamList } from "../navigation/RootNavigator";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Quiz">;
@@ -18,60 +18,51 @@ export default function QuizScreen({ route }: Props) {
   const [wrong, setWrong] = useState(0);
   const [disabledIndexes, setDisabledIndexes] = useState<number[]>([]);
   const [showResult, setShowResult] = useState(false);
+
   const items = useMemo(() => {
     const data = topicsData[topicKey] || [];
     return [...data].sort(() => Math.random() - 0.5);
   }, [topicKey]);
 
   useEffect(() => {
-    const generateQuestion = () => {
-      setDisabledIndexes([]);
+    if (!items.length) return;
 
-      const correctItem = items[questionIndex];
+    setDisabledIndexes([]);
 
-      let otherItems = items.filter((_, i) => i !== questionIndex);
+    const correctItem = items[questionIndex];
+    const otherItems = items
+      .filter((_, i) => i !== questionIndex)
+      .sort(() => Math.random() - 0.5)
+      .slice(0, 3);
 
-      otherItems = shuffleArray(otherItems).slice(0, 3);
+    setOptions([correctItem, ...otherItems].sort(() => Math.random() - 0.5));
 
-      const allOptions = shuffleArray([correctItem, ...otherItems]);
-
-      setOptions(allOptions);
-
-      speak(correctItem.label);
-    };
-
-    if (items.length > 0) {
-      generateQuestion();
-    }
-  }, [items, questionIndex, topicKey]);
+    speak(correctItem.label);
+  }, [items, questionIndex]);
 
   const speak = (text: string) => {
     Speech.stop();
     Speech.speak(text, { language: "en-US" });
   };
 
-  const shuffleArray = (array: any[]) => {
-    return [...array].sort(() => Math.random() - 0.5);
-  };
-
-  const handleAnswer = (option: any, index: number) => {
+  const handleAnswer = (option: LearnItem, index: number) => {
     const correctItem = items[questionIndex];
 
     if (option.label === correctItem.label) {
-      setCorrect(correct + 1);
+      setCorrect((v) => v + 1);
 
       if (questionIndex + 1 < items.length) {
-        setQuestionIndex(questionIndex + 1);
+        setQuestionIndex((v) => v + 1);
       } else {
         setShowResult(true);
       }
     } else {
-      setWrong(wrong + 1);
-      setDisabledIndexes([...disabledIndexes, index]);
+      setWrong((v) => v + 1);
+      setDisabledIndexes((v) => [...v, index]);
     }
   };
 
-  if (items.length === 0) {
+  if (!items.length) {
     return (
       <View style={styles.container}>
         <Text>No data for this topic</Text>
@@ -79,17 +70,22 @@ export default function QuizScreen({ route }: Props) {
     );
   }
 
+  const handleClickRefreshQuiz = () => {
+    setCorrect(0);
+    setWrong(0);
+    setQuestionIndex(0);
+    setShowResult(false);
+  };
+
   const current = items[questionIndex];
 
   return (
     <View style={styles.container}>
       <Text style={styles.topic}>{title}</Text>
 
-      <View style={styles.topRow}>
-        <Text style={styles.score}>
-          Correct: {correct} | Wrong: {wrong}
-        </Text>
-      </View>
+      <Text style={styles.score}>
+        ✅ {correct} | ❌ {wrong}
+      </Text>
 
       <Text style={styles.question}>Choose the correct picture</Text>
 
@@ -97,20 +93,20 @@ export default function QuizScreen({ route }: Props) {
         <Text style={styles.currentWord}>{current.label}</Text>
       )}
 
-      <Pressable onPress={() => speak(current.label)}>
-        <Ionicons name="volume-high" size={30} />
+      <Pressable style={styles.soundBtn} onPress={() => speak(current.label)}>
+        <Ionicons name="volume-high" size={28} color="#4F46E5" />
       </Pressable>
 
       <View style={styles.grid}>
         {options.map((option, index) => {
-          const isDisabled = disabledIndexes.includes(index);
+          const disabled = disabledIndexes.includes(index);
 
           return (
             <Pressable
               key={index}
+              disabled={disabled}
               onPress={() => handleAnswer(option, index)}
-              disabled={isDisabled}
-              style={[styles.card, isDisabled && styles.wrongCard]}
+              style={[styles.card, disabled && styles.wrongCard]}
             >
               {option.image ? (
                 <Image
@@ -135,32 +131,12 @@ export default function QuizScreen({ route }: Props) {
         {questionIndex + 1} / {items.length}
       </Text>
 
-      <Modal visible={showResult} transparent animationType="slide">
-        <View style={styles.modalOverlay}>
-          <View style={styles.modal}>
-            <Text style={styles.modalTitle}>Results</Text>
-
-            <Text style={styles.modalText}>Correct: {correct}</Text>
-            <Text style={styles.modalText}>Wrong: {wrong}</Text>
-
-            <Pressable
-              style={styles.modalButton}
-              onPress={() => {
-                setCorrect(0);
-                setWrong(0);
-                setQuestionIndex(0);
-                setShowResult(false);
-              }}
-            >
-              <Text style={styles.modalButtonText}>Try Again</Text>
-            </Pressable>
-
-            <Pressable style={styles.modalButton} onPress={() => router.back()}>
-              <Text style={styles.modalButtonText}>Back</Text>
-            </Pressable>
-          </View>
-        </View>
-      </Modal>
+      <ResultQuizModal
+        handleClickRefreshQuiz={handleClickRefreshQuiz}
+        correct={correct}
+        showResult={showResult}
+        wrong={wrong}
+      />
     </View>
   );
 }
@@ -176,53 +152,48 @@ const styles = StyleSheet.create({
   topic: {
     fontSize: 26,
     fontWeight: "700",
+    marginBottom: 6,
+  },
+
+  score: {
+    fontSize: 18,
+    fontWeight: "600",
+    marginBottom: 12,
+  },
+
+  question: {
+    fontSize: 20,
     marginBottom: 10,
   },
 
   currentWord: {
     fontSize: 42,
     fontWeight: "900",
-    marginBottom: 10,
+    marginBottom: 8,
   },
 
-  topRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: "100%",
-    alignItems: "center",
-    marginBottom: 10,
-  },
-
-  score: {
-    fontSize: 18,
-    fontWeight: "600",
-  },
-
-  question: {
-    fontSize: 20,
-    marginBottom: 20,
+  soundBtn: {
+    marginBottom: 14,
   },
 
   grid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    justifyContent: "center",
-    alignItems: "center",
     gap: 12,
-    width: "100%",
+    justifyContent: "center",
   },
 
   card: {
     width: "48%",
     aspectRatio: 1,
-    backgroundColor: "#f0f0f0",
+    backgroundColor: "#F3F4F6",
     borderRadius: 18,
     alignItems: "center",
     justifyContent: "center",
   },
 
   wrongCard: {
-    backgroundColor: "#ffcccc",
+    backgroundColor: "#FECACA",
   },
 
   image: {
@@ -233,54 +204,13 @@ const styles = StyleSheet.create({
   colorPreview: {
     width: "85%",
     aspectRatio: 1,
-    borderRadius: 18,
+    borderRadius: 16,
     borderWidth: 2,
-    borderColor: "#d0d0d0",
+    borderColor: "#D1D5DB",
   },
 
   counter: {
-    marginTop: 10,
+    marginTop: 12,
     fontSize: 16,
-  },
-
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-
-  modal: {
-    width: 300,
-    backgroundColor: "white",
-    borderRadius: 16,
-    padding: 20,
-    alignItems: "center",
-  },
-
-  modalTitle: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-
-  modalText: {
-    fontSize: 18,
-    marginBottom: 5,
-  },
-
-  modalButton: {
-    marginTop: 10,
-    backgroundColor: "#4caf50",
-    padding: 10,
-    borderRadius: 10,
-    width: "100%",
-    alignItems: "center",
-  },
-
-  modalButtonText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "600",
   },
 });

@@ -15,7 +15,7 @@ export default function TopicMenuScreen({ route, navigation }: Props) {
 
   const numColumns = 2;
   const screenWidth = Dimensions.get("window").width;
-  const cardWidth = (screenWidth - 24 * 2 - 16) / numColumns; // padding *2 + gap
+  const cardWidth = (screenWidth - 24 * 2 - 16) / numColumns;
 
   return (
     <View style={styles.container}>
