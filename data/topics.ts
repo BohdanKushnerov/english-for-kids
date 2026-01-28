@@ -3,6 +3,7 @@ import { animals } from "./animals";
 import { colors } from "./colors";
 import { gastronomy } from "./gastronomy";
 import { numbers } from "./numbers";
+import { shapes } from "./shapes";
 
 export type LearnItem = {
   label: string;
@@ -19,5 +20,7 @@ export const topicsData: Record<string, LearnItem[]> = {
 
   alphabet,
 
-  gastronomy
+  gastronomy,
+
+  shapes,
 };

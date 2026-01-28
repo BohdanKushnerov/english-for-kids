@@ -31,6 +31,11 @@ const TOPICS = [
     title: "Gastronomy",
     preview: "🍎🍞",
   },
+  {
+    key: "Shapes",
+    title: "Shapes",
+    preview: "🔵⭐",
+  },
 ];
 
 export default function TopicsScreen({ navigation }: Props) {
