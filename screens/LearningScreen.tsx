@@ -4,16 +4,21 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { router } from "expo-router";
 import * as Speech from "expo-speech";
 import { useEffect, useState } from "react";
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+  Dimensions,
+} from "react-native";
 import { RootStackParamList } from "../navigation/RootNavigator";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Learning">;
 
 export default function LearningScreen({ route }: Props) {
   const { topicKey, title } = route.params;
-
   const items = topicsData[topicKey] || [];
-
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
@@ -24,17 +29,12 @@ export default function LearningScreen({ route }: Props) {
 
   const speak = (text: string) => {
     Speech.stop();
-    Speech.speak(text, {
-      language: "en-US",
-    });
+    Speech.speak(text, { language: "en-US" });
   };
 
   const next = () => {
-    if (index + 1 < items.length) {
-      setIndex(index + 1);
-    } else {
-      router.back();
-    }
+    if (index + 1 < items.length) setIndex(index + 1);
+    else router.back();
   };
 
   const prev = () => {
@@ -44,25 +44,36 @@ export default function LearningScreen({ route }: Props) {
   if (items.length === 0) {
     return (
       <View style={styles.container}>
-        <Text>No data for this topic</Text>
+        <Text style={styles.emptyText}>No data for this topic</Text>
       </View>
     );
   }
 
   const current = items[index];
+  const screenWidth = Dimensions.get("window").width;
+  const imageSize = Math.min(screenWidth * 0.7, 250); // адаптивный размер
 
   return (
     <View style={styles.container}>
       <Text style={styles.topic}>{title}</Text>
 
       {current.color && (
-        <View style={[styles.colorBox, { backgroundColor: current.color }]} />
+        <View
+          style={[
+            styles.colorBox,
+            {
+              backgroundColor: current.color,
+              width: imageSize,
+              height: imageSize,
+            },
+          ]}
+        />
       )}
 
       {current.image && (
         <Image
           source={current.image}
-          style={styles.image}
+          style={[styles.image, { width: imageSize, height: imageSize }]}
           resizeMode="contain"
         />
       )}
@@ -71,15 +82,18 @@ export default function LearningScreen({ route }: Props) {
 
       <View style={styles.controls}>
         <Pressable onPress={prev} style={styles.button}>
-          <Ionicons name="arrow-back" size={30} />
+          <Ionicons name="arrow-back" size={28} color="#fff" />
         </Pressable>
 
-        <Pressable onPress={() => speak(current.label)} style={styles.button}>
-          <Ionicons name="volume-high" size={30} />
+        <Pressable
+          onPress={() => speak(current.label)}
+          style={[styles.button, styles.speakButton]}
+        >
+          <Ionicons name="volume-high" size={28} color="#fff" />
         </Pressable>
 
         <Pressable onPress={next} style={styles.button}>
-          <Ionicons name="arrow-forward" size={30} />
+          <Ionicons name="arrow-forward" size={28} color="#fff" />
         </Pressable>
       </View>
 
@@ -95,32 +109,41 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingTop: 40,
+    backgroundColor: "#F9FAFB",
   },
   topic: {
-    fontSize: 26,
+    fontSize: 28,
     fontWeight: "700",
-    marginBottom: 20,
+    color: "#1F2937",
+    marginBottom: 30,
+    textAlign: "center",
   },
   colorBox: {
-    width: 200,
-    height: 200,
     borderRadius: 20,
     marginBottom: 20,
     borderWidth: 2,
-    borderColor: "#DDD",
+    borderColor: "#CBD5E0",
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
   },
   image: {
-    width: 200,
-    height: 200,
-    borderRadius: 16,
+    borderRadius: 20,
     marginBottom: 20,
+    shadowColor: "#000",
+    shadowOpacity: 0.15,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
   },
   word: {
-    fontSize: 36,
-    fontWeight: "bold",
-    marginBottom: 20,
+    fontSize: 38,
+    fontWeight: "900",
+    color: "#111827",
     textAlign: "center",
+    marginBottom: 25,
   },
   controls: {
     flexDirection: "row",
@@ -129,13 +152,26 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   button: {
-    padding: 12,
-    backgroundColor: "#e0e0e0",
-    borderRadius: 12,
+    padding: 14,
+    backgroundColor: "#4CAF50",
+    borderRadius: 14,
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#4F46E5",
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 3 },
+  },
+  speakButton: {
+    backgroundColor: "#19B181",
   },
   counter: {
-    marginTop: 20,
+    marginTop: 25,
     fontSize: 16,
-    color: "#666",
+    color: "#6B7280",
+  },
+  emptyText: {
+    fontSize: 18,
+    color: "#9CA3AF",
   },
 });
