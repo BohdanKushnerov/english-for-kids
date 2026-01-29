@@ -1,5 +1,6 @@
 import { alphabet } from "./alphabet";
 import { animals } from "./animals";
+import { clothes } from "./clothes";
 import { colors } from "./colors";
 import { gastronomy } from "./gastronomy";
 import { numbers } from "./numbers";
@@ -23,4 +24,6 @@ export const topicsData: Record<string, LearnItem[]> = {
   gastronomy,
 
   shapes,
+
+  clothes,
 };

@@ -36,6 +36,11 @@ const TOPICS = [
     title: "Shapes",
     preview: "🔵⭐",
   },
+  {
+    key: "Clothes",
+    title: "Clothes",
+    preview: "👞👚",
+  },
 ];
 
 export default function TopicsScreen({ navigation }: Props) {
