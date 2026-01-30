@@ -1,16 +1,19 @@
+import ResultQuizModal from "@/components/ResultQuizModal/ResultQuizModal";
 import { LearnItem, topicsData } from "@/data/topics";
 import { Ionicons } from "@expo/vector-icons";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { router } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import * as Speech from "expo-speech";
 import { useEffect, useMemo, useState } from "react";
-import { Image, Modal, Pressable, StyleSheet, Text, View } from "react-native";
-import { RootStackParamList } from "../navigation/RootNavigator";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-type Props = NativeStackScreenProps<RootStackParamList, "Quiz">;
+export default function QuizScreen() {
+  const { topic, key } = useLocalSearchParams<{
+    topic: string;
+    key: string;
+  }>();
 
-export default function QuizScreen({ route }: Props) {
-  const { topicKey, title } = route.params;
+  console.log("topic, key", topic, key);
 
   const [questionIndex, setQuestionIndex] = useState(0);
   const [options, setOptions] = useState<LearnItem[]>([]);
@@ -19,9 +22,9 @@ export default function QuizScreen({ route }: Props) {
   const [disabledIndexes, setDisabledIndexes] = useState<number[]>([]);
   const [showResult, setShowResult] = useState(false);
   const items = useMemo(() => {
-    const data = topicsData[topicKey] || [];
+    const data = topicsData[topic] || [];
     return [...data].sort(() => Math.random() - 0.5);
-  }, [topicKey]);
+  }, [topic]);
 
   useEffect(() => {
     const generateQuestion = () => {
@@ -43,7 +46,7 @@ export default function QuizScreen({ route }: Props) {
     if (items.length > 0) {
       generateQuestion();
     }
-  }, [items, questionIndex, topicKey]);
+  }, [items, questionIndex]);
 
   const speak = (text: string) => {
     Speech.stop();
@@ -71,6 +74,13 @@ export default function QuizScreen({ route }: Props) {
     }
   };
 
+  const handleClickRefreshQuiz = () => {
+    setCorrect(0);
+    setWrong(0);
+    setQuestionIndex(0);
+    setShowResult(false);
+  };
+
   if (items.length === 0) {
     return (
       <View style={styles.container}>
@@ -82,84 +92,66 @@ export default function QuizScreen({ route }: Props) {
   const current = items[questionIndex];
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.topic}>{title}</Text>
+    <SafeAreaView style={{ flex: 1 }}>
+      <View style={styles.container}>
+        <Text style={styles.topic}>🎧 Find picture by word</Text>
 
-      <Text style={styles.score}>
-        ✅ {correct} | ❌ {wrong}
-      </Text>
+        <Text style={styles.score}>
+          ✅ {correct} | ❌ {wrong}
+        </Text>
 
-      <Text style={styles.question}>Choose the correct picture</Text>
+        <Text style={styles.question}>Choose the correct picture</Text>
 
-      {title !== "Alphabet" && (
-        <Text style={styles.currentWord}>{current.label}</Text>
-      )}
+        {topic !== "alphabet" && (
+          <Text style={styles.currentWord}>{current.label}</Text>
+        )}
 
-      <Pressable onPress={() => speak(current.label)}>
-        <Ionicons name="volume-high" size={30} />
-      </Pressable>
+        <Pressable onPress={() => speak(current.label)}>
+          <Ionicons name="volume-high" size={30} />
+        </Pressable>
 
-      <View style={styles.grid}>
-        {options.map((option, index) => {
-          const isDisabled = disabledIndexes.includes(index);
+        <View style={styles.grid}>
+          {options.map((option, index) => {
+            const isDisabled = disabledIndexes.includes(index);
 
-          return (
-            <Pressable
-              key={index}
-              onPress={() => handleAnswer(option, index)}
-              disabled={isDisabled}
-              style={[styles.card, isDisabled && styles.wrongCard]}
-            >
-              {option.image ? (
-                <Image
-                  source={option.image}
-                  style={styles.image}
-                  resizeMode="contain"
-                />
-              ) : (
-                <View
-                  style={[
-                    styles.colorPreview,
-                    { backgroundColor: option.color },
-                  ]}
-                />
-              )}
-            </Pressable>
-          );
-        })}
-      </View>
-
-      <Text style={styles.counter}>
-        {questionIndex + 1} / {items.length}
-      </Text>
-
-      <Modal visible={showResult} transparent animationType="slide">
-        <View style={styles.modalOverlay}>
-          <View style={styles.modal}>
-            <Text style={styles.modalTitle}>Results</Text>
-
-            <Text style={styles.modalText}>Correct: {correct}</Text>
-            <Text style={styles.modalText}>Wrong: {wrong}</Text>
-
-            <Pressable
-              style={styles.modalButton}
-              onPress={() => {
-                setCorrect(0);
-                setWrong(0);
-                setQuestionIndex(0);
-                setShowResult(false);
-              }}
-            >
-              <Text style={styles.modalButtonText}>Try Again</Text>
-            </Pressable>
-
-            <Pressable style={styles.modalButton} onPress={() => router.back()}>
-              <Text style={styles.modalButtonText}>Back</Text>
-            </Pressable>
-          </View>
+            return (
+              <Pressable
+                key={index}
+                onPress={() => handleAnswer(option, index)}
+                disabled={isDisabled}
+                style={[styles.card, isDisabled && styles.wrongCard]}
+              >
+                {option.image ? (
+                  <Image
+                    source={option.image}
+                    style={styles.image}
+                    resizeMode="contain"
+                  />
+                ) : (
+                  <View
+                    style={[
+                      styles.colorPreview,
+                      { backgroundColor: option.color },
+                    ]}
+                  />
+                )}
+              </Pressable>
+            );
+          })}
         </View>
-      </Modal>
-    </View>
+
+        <Text style={styles.counter}>
+          {questionIndex + 1} / {items.length}
+        </Text>
+
+        <ResultQuizModal
+          handleClickRefreshQuiz={handleClickRefreshQuiz}
+          correct={correct}
+          showResult={showResult}
+          wrong={wrong}
+        />
+      </View>
+    </SafeAreaView>
   );
 }
 

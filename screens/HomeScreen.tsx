@@ -1,15 +1,14 @@
 import PrimaryButton from "@/components/ui/PrimaryButton";
 import { useTheme } from "@react-navigation/native";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { useRouter } from "expo-router";
 import * as Speech from "expo-speech";
 import { useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { RootStackParamList } from "../navigation/RootNavigator";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-type Props = NativeStackScreenProps<RootStackParamList, "Home">;
-
-export default function HomeScreen({ navigation }: Props) {
+export default function HomeScreen() {
   const { colors } = useTheme();
+  const router = useRouter();
 
   useEffect(() => {
     Speech.speak(" ", {
@@ -19,17 +18,19 @@ export default function HomeScreen({ navigation }: Props) {
   }, []);
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <Text style={[styles.title, { color: colors.text }]}>👋 Hello!</Text>
-      <Text style={[styles.subtitle, { color: colors.text }]}>
-        Let’s learn English together
-      </Text>
+    <SafeAreaView style={{ flex: 1 }}>
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <Text style={[styles.title, { color: colors.text }]}>👋 Hello!</Text>
+        <Text style={[styles.subtitle, { color: colors.text }]}>
+          Let’s learn English together
+        </Text>
 
-      <PrimaryButton
-        title="Start learning"
-        onPress={() => navigation.navigate("Topics")}
-      />
-    </View>
+        <PrimaryButton
+          title="Start learning"
+          onPress={() => router.push("/topics")}
+        />
+      </View>
+    </SafeAreaView>
   );
 }
 

@@ -1,17 +1,18 @@
-import { View, Text, StyleSheet, FlatList, Dimensions } from "react-native";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { RootStackParamList } from "../navigation/RootNavigator";
 import PrimaryButton from "@/components/ui/PrimaryButton";
-
-type Props = NativeStackScreenProps<RootStackParamList, "TopicMenu">;
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { Dimensions, FlatList, StyleSheet, Text, View } from "react-native";
 
 const MENU_ITEMS = [
-  { key: "learn", title: "📖 Learn words", type: "learning" },
-  { key: "quiz", title: "🎧 Find picture by word", type: "quiz" },
+  { key: "learning", title: "📖 Learn words"},
+  { key: "quiz", title: "🎧 Find picture by word"},
 ];
 
-export default function TopicMenuScreen({ route, navigation }: Props) {
-  const { topic } = route.params;
+export default function TopicMenuScreen() {
+  const router = useRouter();
+  const { key } = useLocalSearchParams<{ key: string }>();
+
+  const topicKey = String(key);
+  const title = topicKey.toUpperCase();
 
   const numColumns = 2;
   const screenWidth = Dimensions.get("window").width;
@@ -19,7 +20,7 @@ export default function TopicMenuScreen({ route, navigation }: Props) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{topic}</Text>
+      <Text style={styles.title}>{title}</Text>
 
       <FlatList
         data={MENU_ITEMS}
@@ -34,17 +35,11 @@ export default function TopicMenuScreen({ route, navigation }: Props) {
             <PrimaryButton
               title={item.title}
               onPress={() => {
-                if (item.type === "learning") {
-                  navigation.navigate("Learning", {
-                    topicKey: topic.toLowerCase(),
-                    title: topic,
-                  });
-                } else {
-                  navigation.navigate("Quiz", {
-                    topicKey: topic.toLowerCase(),
-                    title: topic,
-                  });
-                }
+                router.push(
+                  item.key === "learning"
+                    ? `/topics/${topicKey.toLowerCase()}/${item.key}/learning`
+                    : `/topics/${topicKey.toLowerCase()}/${item.key}/quiz`
+                );
               }}
             />
           </View>

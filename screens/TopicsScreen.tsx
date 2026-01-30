@@ -1,9 +1,6 @@
 import PrimaryButton from "@/components/ui/PrimaryButton";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
-import { RootStackParamList } from "../navigation/RootNavigator";
-
-type Props = NativeStackScreenProps<RootStackParamList, "Topics">;
+import { useRouter } from "expo-router";
 
 const TOPICS = [
   {
@@ -43,7 +40,9 @@ const TOPICS = [
   },
 ];
 
-export default function TopicsScreen({ navigation }: Props) {
+export default function TopicsScreen() {
+  const router = useRouter();
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Choose a topic</Text>
@@ -72,8 +71,8 @@ export default function TopicsScreen({ navigation }: Props) {
 
               <PrimaryButton
                 title={topic.title}
-                onPress={() =>
-                  navigation.navigate("TopicMenu", { topic: topic.key })
+                onPress={
+                  () => router.push(`/topics/topic/${topic.key}`)
                 }
               />
             </View>
